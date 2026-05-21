@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>InterviewIQ AI</title>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+    content="width=device-width, initial-scale=1">
+
+    <link href=
+    "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet">
+    
+
+    <style>
+
+        body{
+            background:#f4f7fc;
+        }
+
+        .navbar{
+            background:#0d6efd;
+        }
+
+        .navbar-brand{
+            color:white !important;
+            font-weight:bold;
+            font-size:24px;
+        }
+
+        .card{
+            border:none;
+            border-radius:15px;
+            box-shadow:0px 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-custom{
+            background:#0d6efd;
+            color:white;
+            border-radius:10px;
+            padding:10px 20px;
+        }
+
+        .btn-custom:hover{
+            background:#084298;
+            color:white;
+        }
+
+        .dashboard-card{
+            transition:0.3s;
+        }
+
+        .dashboard-card:hover{
+            transform:translateY(-5px);
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg">
+
+    <div class="container">
+
+        <a class="navbar-brand"
+        href="/">
+            CareerIQ 
+        </a>
+        
+
+        <div>
+            <a href="/dashboard/" class="btn btn-primary px-4 py-2">
+            Dashboard
+            </a>
+
+            <a href="/logout/"
+            class="btn btn-danger">
+                Logout
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+<div class="container mt-3">
+
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+
+                {{ message }}
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert">
+                </button>
+
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+</div>
+
+<div class="container mt-5">
+
+    {% block content %}
+    {% endblock %}
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

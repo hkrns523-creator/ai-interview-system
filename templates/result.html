@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-8">
+
+            <div class="card shadow-lg p-5 text-center">
+
+                <h1 class="mb-4">
+                    Interview Completed
+                </h1>
+
+                <hr>
+
+                <h3 class="mb-3">
+                    Final Score
+                </h3>
+
+                {% if final_score >= 8 %}
+
+                    <h1 class="text-success display-3 fw-bold">
+
+                {% elif final_score >= 5 %}
+
+                    <h1 class="text-warning display-3 fw-bold">
+
+                {% else %}
+
+                    <h1 class="text-danger display-3 fw-bold">
+
+                {% endif %}
+
+                    {{ final_score }}/10
+
+                </h1>
+
+                <a href="/interview/"
+                class="btn btn-primary mt-4">
+
+                    Start New Interview
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="row mt-5">
+
+        <div class="col-md-4">
+
+            <div class="card shadow p-4 text-center">
+
+                <h3>
+                    Technical Score
+                </h3>
+
+                <h1 class="text-primary">
+
+                    {{ semantic }}/10
+
+                </h1>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card shadow p-4 text-center">
+
+                <h3>
+                    Keyword Score
+                </h3>
+
+                <h1 class="text-success">
+
+                    {{ keyword }}/10
+
+                </h1>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card shadow p-4 text-center">
+
+                <h3>
+                    Grammar Score
+                </h3>
+
+                <h1 class="text-warning">
+
+                    {{ grammar }}/10
+
+                </h1>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Feedback Section -->
+
+    <div class="card shadow p-4 mt-5">
+
+        <h2 class="mb-3">
+            AI Feedback
+        </h2>
+
+        <ul>
+
+            {% for item in feedback %}
+
+                <li class="mb-2">
+                    {{ item }}
+                </li>
+
+            {% endfor %}
+
+        </ul>
+
+    </div>
+
+    <!-- Chart -->
+
+    <div class="card shadow p-4 mt-5">
+
+    <h2 class="mb-4">
+        AI Interview Insights
+    </h2>
+
+    <!-- Technical -->
+
+
+<h5>
+    Technical Understanding
+</h5>
+
+<div class="progress mb-4" style="height:35px;">
+
+    <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+    style="width:{% widthratio semantic 1 10 %}%">
+
+        {{ semantic }}/10
+
+    </div>
+
+</div>
+
+
+<!-- Keyword -->
+
+<h5>
+    Domain Keyword Usage
+</h5>
+
+<div class="progress mb-4" style="height:35px;">
+
+    <div
+    class="progress-bar progress-bar-striped progress-bar-animated bg-success" style="width:{% widthratio keyword 1 10 %}%">
+
+        {{ keyword }}/10
+
+    </div>
+
+</div>
+
+
+<!-- Grammar -->
+
+<h5>
+    Communication Clarity
+</h5>
+
+<div class="progress" style="height:35px;">
+
+    <div
+    class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width:{% widthratio grammar 1 10 %}%">
+
+        {{ grammar }}/10
+
+    </div>
+
+</div>
+{% endblock %}

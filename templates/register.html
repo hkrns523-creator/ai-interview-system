@@ -1,0 +1,110 @@
+{% extends 'auth_base.html' %}
+
+{% block content %}
+
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+
+    <div class="card shadow-lg border-0 rounded-4 p-5 register-card">
+
+        <div class="text-center mb-4">
+            <h1 class="fw-bold text-primary mb-2 main-title">
+                InterviewIQ AI
+            </h1>
+
+            <p class="text-muted">
+                Create your account
+            </p>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="row align-items-center mb-4">
+                <label class="col-sm-5 col-form-label fw-semibold">
+                    Username    :
+                </label>
+
+                <div class="col-sm-7">
+                    {{ form.username }}
+                </div>
+            </div>
+
+            <div class="row align-items-center mb-4">
+                <label class="col-sm-5 col-form-label fw-semibold">
+                    Password    :
+                </label>
+
+                <div class="col-sm-7">
+                    {{ form.password1 }}
+                </div>
+            </div>
+
+            <div class="row align-items-center mb-4">
+                <label class="col-sm-5 col-form-label fw-semibold">
+                    Confirm Password :
+                </label>
+
+                <div class="col-sm-7">
+                    {{ form.password2 }}
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 register-btn">
+                Register
+            </button>
+
+        </form>
+
+        <p class="text-center mt-4 mb-0">
+            Already have an account?
+            <a href="{% url 'login' %}" class="text-decoration-none fw-semibold">
+                Login
+            </a>
+        </p>
+
+    </div>
+
+</div>
+
+<style>
+    body{
+        background-color: #f4f6fb;
+    }
+
+    .register-card{
+        width: 100%;
+        max-width: 550px;
+    }
+
+    .main-title{
+        font-size: 40px;
+    }
+
+    input{
+        width: 100%;
+        height: 35px;
+        border: 1px solid #ced4da;
+        border-radius: 10px;
+        padding: 10px 15px;
+        font-size: 15px;
+        outline: none;
+    }
+
+    input:focus{
+        border-color: #0d6efd;
+        box-shadow: 0 0 6px rgba(13,110,253,0.25);
+    }
+
+    .register-btn{
+        height: 50px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 10px;
+    }
+
+    label{
+        font-size: 15px;
+    }
+</style>
+
+{% endblock %}

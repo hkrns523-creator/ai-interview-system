@@ -1,0 +1,265 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-md-8">
+
+        <div class="card p-5 shadow">
+
+            <h2 class="mb-4 text-center">
+
+                AI Interview Platform
+
+            </h2>
+
+            {% if roles %}
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <div class="mb-4">
+
+                <select name="role" class="form-select">
+
+                    {% for role in roles %}
+
+                    <option value="{{ role.name }}">
+                        {{ role.name }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+                </div>
+
+                <button
+                type="submit"
+                name="start_interview"
+                class="btn btn-custom w-100">
+
+                    Start Interview
+
+                </button>
+
+            </form>
+
+            {% endif %}
+
+            {% if question %}
+
+            <div class="mt-4">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <h4>
+
+                        {{ role }}
+
+                    </h4>
+
+                    <span class="badge bg-primary p-2">
+
+                    Question {{ q_index|add:"1" }}
+                    of
+                    {{ total_questions }}
+
+                    </span>
+
+                </div>
+
+                <hr>
+
+                <h5 class="mb-4">
+
+                    {{ question.question }}
+
+                </h5>
+
+                <form method="POST">
+
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Select Answer Mode
+
+                        </label>
+
+                        <select
+                        id="answerMode"
+                        class="form-select">
+
+                            <option value="text">
+
+                                Text Answer
+
+                            </option>
+
+                            <option value="voice">
+
+                                Voice Answer
+
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <textarea
+                    id="answerBox"
+                    name="answer"
+                    class="form-control"
+                    rows="6"
+                    placeholder="Enter your answer here..."
+                    required></textarea>
+
+                    <div class="mt-4 d-flex gap-3">
+
+                        <button
+                        id="voiceBtn"
+                        type="button"
+                        onclick="startRecognition()"
+                        class="btn btn-dark"
+                        style="display:none;">
+
+                            🎤 Voice Answer
+
+                        </button>
+
+                        {% if q_index == total_questions|add:"-1" %}
+
+                        <button
+                        type="submit"
+                        name="submit_answer"
+                        class="btn btn-success">
+
+                            Finish Interview
+
+                        </button>
+
+                        {% else %}
+
+                        <button
+                        type="submit"
+                        name="submit_answer"
+                        class="btn btn-primary">
+
+                            Next Question
+
+                        </button>
+
+                        {% endif %}
+
+                    </div>
+
+                </form>
+
+            </div>
+
+            {% endif %}
+
+            {% if error %}
+
+            <div class="alert alert-danger mt-4">
+
+                {{ error }}
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const answerMode =
+document.getElementById(
+    "answerMode"
+);
+
+const voiceBtn =
+document.getElementById(
+    "voiceBtn"
+);
+
+if (answerMode && voiceBtn) {
+
+    function toggleVoiceButton() {
+
+        if (
+            answerMode.value === "voice"
+        ) {
+
+            voiceBtn.style.display =
+            "block";
+
+        } else {
+
+            voiceBtn.style.display =
+            "none";
+        }
+    }
+
+    toggleVoiceButton();
+
+    answerMode.addEventListener(
+        "change",
+        toggleVoiceButton
+    );
+}
+
+function startRecognition() {
+
+    const recognition =
+    new webkitSpeechRecognition();
+
+    recognition.lang = "en-US";
+
+    recognition.continuous = false;
+
+    recognition.interimResults = false;
+
+    recognition.start();
+
+    voiceBtn.innerHTML =
+    "🎙️ Listening...";
+
+    recognition.onresult =
+    function(event) {
+
+        const transcript =
+        event.results[0][0].transcript;
+
+        document.getElementById(
+            "answerBox"
+        ).value = transcript;
+
+        voiceBtn.innerHTML =
+        "🎤 Voice Answer";
+    };
+
+    recognition.onerror =
+    function(event) {
+
+        alert(
+            "Voice recognition error"
+        );
+
+        voiceBtn.innerHTML =
+        "🎤 Voice Answer";
+    };
+}
+
+</script>
+
+{% endblock %}

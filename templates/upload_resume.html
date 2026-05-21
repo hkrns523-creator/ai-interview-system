@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-md-8">
+
+        <div class="card p-5">
+
+            <h2 class="mb-4">
+                Resume Analyzer
+            </h2>
+
+            <form method="POST"
+            enctype="multipart/form-data">
+
+                {% csrf_token %}
+
+                <input type="file"
+                name="resume"
+                class="form-control mb-3"
+                required>
+
+                <button type="submit"
+                class="btn btn-custom">
+                    Analyze Resume
+                </button>
+
+            </form>
+
+            {% if score %}
+
+<hr>
+
+<div class="alert alert-success">
+
+    <strong>
+
+        Best Matched Role:
+
+    </strong>
+
+    {{ predicted_role }}
+
+</div>
+
+<h4>
+    ATS Score:
+    {{ score }}%
+</h4>
+
+<h4>
+    Predicted Role:
+    {{ predicted_role }}
+</h4>
+
+            <h5 class="mt-4">
+                Skills Found:
+            </h5>
+
+            <div>
+
+                {% for skill in skills %}
+
+                <span class="badge bg-primary p-2 m-1">
+                    {{ skill }}
+                </span>
+
+                {% endfor %}
+
+            </div>
+
+            <h5 class="mt-4">
+                Matching Roles:
+            </h5>
+
+            <ul>
+
+                {% for role in matched_roles %}
+
+                <li>{{ role }}</li>
+
+                {% endfor %}
+
+            </ul>
+
+            {% endif %}
+            {% if matched_roles %}
+
+<hr class="mt-5">
+
+<h3 class="mb-4 text-center">
+
+    Recommended Interview Roles
+
+</h3>
+
+<div class="row">
+
+    {% for role in matched_roles %}
+
+    <div class="col-md-6">
+
+        <div class="card shadow p-4 mb-4 text-center">
+
+            <h4 class="mb-3">
+
+                {{ role }}
+
+            </h4>
+
+            {% if role == predicted_role %}
+
+            <span class="badge bg-success mb-3">
+
+                Best Match
+
+            </span>
+
+            {% endif %}
+
+            <form
+            method="POST"
+            action="/interview/">
+
+                {% csrf_token %}
+
+                <input
+                type="hidden"
+                name="role"
+                value="{{ role }}">
+
+                <button
+                type="submit"
+                name="start_interview"
+                class="btn btn-primary w-100">
+
+                    Start AI Interview
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

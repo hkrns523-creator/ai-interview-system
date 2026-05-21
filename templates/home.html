@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<div class="row">
+
+    <div class="col-md-6">
+
+        <div class="card dashboard-card p-4">
+
+            <h2>Resume Analyzer</h2>
+
+            <p>
+                Upload resume and analyze:
+            </p>
+
+            <ul>
+                <li>ATS Score</li>
+                <li>Role Prediction</li>
+                <li>Skills Detection</li>
+            </ul>
+
+            <a href="/upload_resume/"
+            class="btn btn-custom">
+                Analyze Resume
+            </a>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-6">
+
+        <div class="card dashboard-card p-4">
+
+            <h2>AI Interview</h2>
+
+            <p>
+                Practice AI-powered interviews.
+            </p>
+
+            <ul>
+                <li>Multiple Roles</li>
+                <li>AI Evaluation</li>
+                <li>Performance Score</li>
+            </ul>
+
+            <a href="/interview/"
+            class="btn btn-custom">
+                Start Interview
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
