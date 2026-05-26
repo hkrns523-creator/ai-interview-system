@@ -8,7 +8,7 @@ question_templates = {
         "question": "What is Python and why is it widely used?",
         "difficulty": "Easy",
         "answer": "Python is a high-level, interpreted programming language known for its simplicity and readability. It is widely used in web development, data science, AI, and automation.",
-        "keywords": ["interpreted", "high-level", "simplicity", "libraries"]
+        "keywords": ["interpreted", "high-level", "libraries"]
       },
       {
         "question": "What are variables in Python?",
@@ -28,7 +28,7 @@ question_templates = {
         "question": "Difference between list and tuple in Python?",
         "difficulty": "Medium",
         "answer": "Lists are mutable and slower, while tuples are immutable and faster. Tuples are used for fixed data while lists are used for dynamic data.",
-        "keywords": ["mutable", "immutable", "performance"]
+        "keywords": ["mutable", "immutable"]
       }
     ],
     "hard": [
@@ -36,7 +36,7 @@ question_templates = {
         "question": "What is GIL in Python and how does it affect performance?",
         "difficulty": "Hard",
         "answer": "GIL (Global Interpreter Lock) allows only one thread to execute Python bytecode at a time, limiting CPU-bound multithreading but allowing I/O concurrency.",
-        "keywords": ["GIL", "threading", "concurrency", "CPU-bound"]
+        "keywords": ["GIL", "threading", "concurrency"]
       },
       {
         "question": "How would you optimize a large-scale Python backend system?",
