@@ -254,7 +254,7 @@ def interview(request):
                 total_score / len(questions),
                 2
             )
-        
+
             InterviewResult.objects.create(
             
                 user=request.user,
@@ -266,23 +266,34 @@ def interview(request):
                 feedback=f"Interview completed with score {final_score}/10"
 
             )
-            
-            request.session.flush()
 
-            messages.success(request,"Interview completed successfully")
+            # STORE RESULT DATA IN SESSION
 
-            return render(request, 'result.html', {
+            request.session['final_score'] = final_score
 
-                'final_score': final_score,
+            request.session['feedback'] = feedback
 
-                'feedback': feedback,
+            request.session['semantic'] = result['semantic']
 
-                'semantic': result['semantic'],
+            request.session['keyword'] = result['keyword']
 
-                'keyword': result['keyword'],
+            request.session['grammar'] = result['grammar']
 
-                'grammar': result['grammar']
-            })
+            # REMOVE INTERVIEW SESSION DATA
+
+            request.session.pop('questions', None)
+
+            request.session.pop('q_index', None)
+
+            request.session.pop('total_score', None)
+
+            request.session.pop('role', None)
+
+            request.session.pop('interview_results', None)
+
+            messages.success(request, "Interview completed successfully")
+
+            return redirect('result_page')
 
 
     if role and q_index < len(questions):
@@ -330,3 +341,20 @@ def dashboard(request):
         'highest_score': highest_score
 
     })
+def result_page(request):
+
+    context = {
+
+        'final_score': request.session.get('final_score', 0),
+
+        'feedback': request.session.get('feedback', ''),
+
+        'semantic': request.session.get('semantic', 0),
+
+        'keyword': request.session.get('keyword', 0),
+
+        'grammar': request.session.get('grammar', 0)
+
+    }
+
+    return render(request, 'result.html', context)

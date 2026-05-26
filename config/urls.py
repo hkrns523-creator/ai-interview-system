@@ -30,6 +30,7 @@ urlpatterns = [
     path('upload_resume/', views.upload_resume, name='upload_resume'),
     path('interview/', views.interview, name='interview'),
     path('dashboard/', views.dashboard, name='dashboard'),
+    path('result/', views.result_page, name='result_page'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL,
