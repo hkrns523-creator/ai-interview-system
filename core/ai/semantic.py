@@ -1,11 +1,16 @@
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 
+# Load model once
+model = SentenceTransformer(
+    'all-MiniLM-L6-v2'
+)
 
 def semantic_score(user_answer, correct_answer):
 
     answer = user_answer.strip().lower()
 
+    # Basic validations
     if not answer:
         return 0
 
@@ -15,30 +20,29 @@ def semantic_score(user_answer, correct_answer):
     if len(set(answer)) <= 3:
         return 0
 
-    texts = [
+    # Generate embeddings
+    embeddings = model.encode([
         answer,
         correct_answer.lower()
-    ]
+    ])
 
-    vectorizer = TfidfVectorizer()
-
-    vectors = vectorizer.fit_transform(texts)
-
+    # Calculate semantic similarity
     similarity = cosine_similarity(
-        vectors[0],
-        vectors[1]
+        [embeddings[0]],
+        [embeddings[1]]
     )[0][0]
 
-    if similarity < 0.2:
+    # Score mapping
+    if similarity < 0.30:
         return 0
 
-    elif similarity < 0.4:
+    elif similarity < 0.50:
         return 4
 
-    elif similarity < 0.6:
+    elif similarity < 0.70:
         return 6
 
-    elif similarity < 0.8:
+    elif similarity < 0.85:
         return 8
 
     return 10
