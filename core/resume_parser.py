@@ -1,109 +1,48 @@
 import pdfplumber
 
+from sentence_transformers import SentenceTransformer
+
+from sklearn.metrics.pairwise import cosine_similarity
+
+
+# Load model once
+model = SentenceTransformer(
+    "all-MiniLM-L6-v2"
+)
+
+
+# Role descriptions
 roles = {
 
-    "Python Developer": [
-        "python",
-        "oop",
-        "functions",
-        "data structures",
-        "algorithms",
-        "debugging",
-        "git",
-        "sql"
-    ],
+    "Python Developer":
+    "Python Django Flask REST API SQL OOP Data Structures Algorithms Git Backend Development",
 
-    "Java Developer": [
-        "java",
-        "spring boot",
-        "hibernate",
-        "jdbc",
-        "jsp",
-        "servlets",
-        "mysql",
-        "oop"
-    ],
+    "Java Developer":
+    "Java Spring Boot Hibernate JDBC JSP Servlets MySQL OOP Backend Development",
 
-    "Frontend Developer": [
-        "html",
-        "css",
-        "javascript",
-        "react",
-        "bootstrap",
-        "tailwind css",
-        "responsive design"
-    ],
+    "Frontend Developer":
+    "HTML CSS JavaScript React Bootstrap Tailwind CSS Responsive Web Design UI Development",
 
-    "Python Full Stack Developer": [
-        "python",
-        "django",
-        "html",
-        "css",
-        "javascript",
-        "react",
-        "sql",
-        "rest api"
-    ],
+    "Python Full Stack Developer":
+    "Python Django HTML CSS JavaScript React SQL REST API Full Stack Development",
 
-    "MERN Stack Developer": [
-        "mongodb",
-        "expressjs",
-        "react",
-        "nodejs",
-        "javascript",
-        "api"
-    ],
+    "MERN Stack Developer":
+    "MongoDB ExpressJS React NodeJS JavaScript REST API Full Stack Development",
 
-    "Java Full Stack Developer": [
-        "java",
-        "spring boot",
-        "hibernate",
-        "html",
-        "css",
-        "javascript",
-        "react",
-        "mysql"
-    ],
+    "Java Full Stack Developer":
+    "Java Spring Boot Hibernate HTML CSS JavaScript React MySQL Full Stack Development",
 
-    "Data Scientist": [
-        "python",
-        "pandas",
-        "numpy",
-        "matplotlib",
-        "seaborn",
-        "machine learning",
-        "statistics",
-        "data analysis"
-    ],
+    "Data Scientist":
+    "Python Pandas NumPy Matplotlib Seaborn Statistics Data Analysis Machine Learning Data Visualization",
 
-    "AI/ML Engineer": [
-        "python",
-        "tensorflow",
-        "pytorch",
-        "deep learning",
-        "nlp",
-        "opencv",
-        "machine learning"
-    ],
+    "AI/ML Engineer":
+    "Python Machine Learning Deep Learning NLP TensorFlow PyTorch Transformers OpenCV Artificial Intelligence",
 
-    "DevOps Engineer": [
-        "docker",
-        "kubernetes",
-        "jenkins",
-        "aws",
-        "linux",
-        "ci/cd",
-        "terraform"
-    ],
+    "DevOps Engineer":
+    "Docker Kubernetes Jenkins AWS Linux CI CD Terraform Cloud Infrastructure",
 
-    "Cybersecurity Analyst": [
-        "ethical hacking",
-        "network security",
-        "penetration testing",
-        "kali linux",
-        "wireshark",
-        "cryptography"
-    ]
+    "Cybersecurity Analyst":
+    "Ethical Hacking Penetration Testing Network Security Kali Linux Wireshark Cryptography Information Security"
 }
 
 
@@ -111,7 +50,7 @@ def extract_resume_data(pdf_path):
 
     text = ""
 
-    # Extract PDF text
+    # Extract text from PDF
     with pdfplumber.open(pdf_path) as pdf:
 
         for page in pdf.pages:
@@ -119,50 +58,61 @@ def extract_resume_data(pdf_path):
             page_text = page.extract_text()
 
             if page_text:
-                text += page_text.lower()
+
+                text += page_text + " "
+
+    text = text.lower()
+
+    # Create embedding for resume
+    resume_embedding = model.encode(
+        text
+    )
 
     role_scores = {}
 
-    all_found_skills = []
+    # Compare with each role
+    for role, description in roles.items():
 
-    # Calculate role scores
-    for role, skills in roles.items():
+        role_embedding = model.encode(
+            description
+        )
 
-        matched_skills = []
+        similarity = cosine_similarity(
+            [resume_embedding],
+            [role_embedding]
+        )[0][0]
 
-        for skill in skills:
+        role_scores[role] = round(
+            similarity * 100,
+            2
+        )
 
-            if skill.lower() in text:
-                matched_skills.append(skill)
-
-        score = int((len(matched_skills) / len(skills)) * 100)
-
-        role_scores[role] = {
-            "score": score,
-            "skills": matched_skills
-        }
-
-    # Find best role
+    # Best matching role
     best_role = max(
         role_scores,
-        key=lambda x: role_scores[x]["score"]
+        key=role_scores.get
     )
 
-    best_score = role_scores[best_role]["score"]
+    best_score = role_scores[
+        best_role
+    ]
 
-    found_skills = role_scores[best_role]["skills"]
-
-    # Multiple matching roles
+    # Roles above threshold
     matched_roles = []
 
-    for role, data in role_scores.items():
+    for role, score in role_scores.items():
 
-        if data["score"] >= 30:
+        if score >= 40:
+
             matched_roles.append(role)
 
     return {
+
         "best_role": best_role,
+
         "score": best_score,
-        "skills": found_skills,
-        "matched_roles": matched_roles
+
+        "matched_roles": matched_roles,
+
+        "all_scores": role_scores
     }

@@ -1,152 +1,77 @@
+from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
+
+# Load model once
+model = SentenceTransformer(
+    "all-MiniLM-L6-v2"
+)
+
 def extract_skills(resume_text):
 
-    skills_database = {
+    role_descriptions = {
 
-    "Python Developer": [
+        "Python Developer":
+        "Python OOP Functions Data Structures Algorithms Debugging Git SQL Backend Development",
 
-        "python",
-        "oop",
-        "functions",
-        "data structures",
-        "algorithms",
-        "debugging",
-        "git",
-        "sql"
-    ],
+        "Frontend Developer":
+        "HTML CSS JavaScript React Bootstrap Tailwind CSS Responsive Web Design",
 
-    "Frontend Developer": [
+        "Python Full Stack Developer":
+        "Python Django HTML CSS JavaScript React SQL REST API Full Stack Development",
 
-        "html",
-        "css",
-        "javascript",
-        "react",
-        "bootstrap",
-        "tailwind css",
-        "responsive design"
-    ],
+        "MERN Stack Developer":
+        "MongoDB ExpressJS React NodeJS JavaScript API Full Stack Development",
 
-    "Python Full Stack Developer": [
+        "Java Developer":
+        "Java Spring Boot Hibernate JDBC JSP Servlets MySQL OOP",
 
-        "python",
-        "django",
-        "html",
-        "css",
-        "javascript",
-        "react",
-        "sql",
-        "rest api"
-    ],
+        "Java Full Stack Developer":
+        "Java Spring Boot Hibernate HTML CSS JavaScript React MySQL",
 
-    "MERN Stack Developer": [
+        "AI/ML Engineer":
+        "Python Machine Learning Deep Learning TensorFlow PyTorch NLP OpenCV Artificial Intelligence",
 
-        "mongodb",
-        "expressjs",
-        "react",
-        "nodejs",
-        "javascript",
-        "api"
-    ],
+        "Data Analyst":
+        "Excel Power BI SQL Tableau Data Visualization Python Analytics",
 
-    "Java Developer": [
+        "Data Scientist":
+        "Python Pandas NumPy Matplotlib Seaborn Statistics Machine Learning Data Analysis",
 
-        "java",
-        "spring boot",
-        "hibernate",
-        "jdbc",
-        "jsp",
-        "servlets",
-        "mysql",
-        "oop"
-    ],
+        "DevOps Engineer":
+        "Docker Kubernetes Jenkins AWS Linux CI CD Terraform",
 
-    "Java Full Stack Developer": [
+        "Cybersecurity Analyst":
+        "Ethical Hacking Network Security Penetration Testing Kali Linux Wireshark Cryptography"
+    }
 
-        "java",
-        "spring boot",
-        "hibernate",
-        "html",
-        "css",
-        "javascript",
-        "react",
-        "mysql"
-    ],
-
-    "AI/ML Engineer": [
-
-        "python",
-        "machine learning",
-        "deep learning",
-        "tensorflow",
-        "pytorch",
-        "nlp",
-        "opencv"
-    ],
-
-    "Data Analyst": [
-
-        "excel",
-        "power bi",
-        "sql",
-        "tableau",
-        "data visualization",
-        "python"
-    ],
-
-    "Data Scientist": [
-
-        "python",
-        "pandas",
-        "numpy",
-        "matplotlib",
-        "seaborn",
-        "statistics",
-        "machine learning",
-        "data analysis"
-    ],
-
-    "DevOps Engineer": [
-
-        "docker",
-        "kubernetes",
-        "jenkins",
-        "aws",
-        "linux",
-        "ci/cd",
-        "terraform"
-    ],
-
-    "Cybersecurity Analyst": [
-
-        "ethical hacking",
-        "network security",
-        "penetration testing",
-        "kali linux",
-        "wireshark",
-        "cryptography"
-    ]
-}
-    resume_text = resume_text.lower()
+    # Resume embedding
+    resume_embedding = model.encode(
+        resume_text,
+        convert_to_numpy=True
+    )
 
     role_scores = {}
 
-    for role, skills in skills_database.items():
+    for role, description in role_descriptions.items():
 
-        matched = 0
+        role_embedding = model.encode(
+            description,
+            convert_to_numpy=True
+        )
 
-        for skill in skills:
+        similarity = cosine_similarity(
+            [resume_embedding],
+            [role_embedding]
+        )[0][0]
 
-            if skill in resume_text:
-
-                matched += 1
-
-        role_scores[role] = matched
+        role_scores[role] = round(
+            similarity * 100,
+            2
+        )
 
     sorted_roles = sorted(
-
         role_scores.items(),
-
         key=lambda x: x[1],
-
         reverse=True
     )
 
