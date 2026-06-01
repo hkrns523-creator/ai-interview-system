@@ -84,7 +84,7 @@ def upload_resume(request):
 
         predicted_role = result['best_role']
 
-        skills = result['skills']
+        skills = result.get('skills', [])
 
         score = result['score']
 
