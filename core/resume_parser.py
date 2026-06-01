@@ -1,5 +1,5 @@
 import pdfplumber
-
+import re
 from sentence_transformers import SentenceTransformer
 
 from sklearn.metrics.pairwise import cosine_similarity
@@ -65,35 +65,58 @@ def extract_resume_data(pdf_path):
 
     found_skills = []
 
+    # Extract skills using regex word boundaries
     for description in roles.values():
 
         for skill in description.lower().split():
 
-            if skill in text and skill not in found_skills:
+            pattern = rf"\b{re.escape(skill)}\b"
 
-                found_skills.append(skill)
+            if re.search(pattern, text):
+
+                if skill not in found_skills:
+
+                    found_skills.append(skill)
 
     # Create embedding for resume
-    resume_embedding = model.encode(
-        text
-    )
+    resume_embedding = model.encode(text)
 
     role_scores = {}
 
     # Compare with each role
     for role, description in roles.items():
 
-        role_embedding = model.encode(
-            description
-        )
+        role_embedding = model.encode(description)
 
         similarity = cosine_similarity(
             [resume_embedding],
             [role_embedding]
         )[0][0]
 
+        semantic_score = similarity * 100
+
+        matched_skills = []
+
+        for skill in found_skills:
+
+            pattern = rf"\b{re.escape(skill)}\b"
+
+            if re.search(pattern, description.lower()):
+
+                matched_skills.append(skill)
+
+        keyword_score = (
+            len(matched_skills)
+            / len(description.split())
+        ) * 100
+
+        final_score = (
+            semantic_score * 0.4 +
+            keyword_score * 0.6
+        )
+
         role_scores[role] = round(
-            similarity * 100,
+            final_score,
             2
         )
 
@@ -103,28 +126,26 @@ def extract_resume_data(pdf_path):
         key=role_scores.get
     )
 
-    best_score = role_scores[
-        best_role
-    ]
+    best_score = role_scores[best_role]
 
-    # Roles above threshold
+    # Show only strong matching roles
     matched_roles = []
 
     for role, score in role_scores.items():
 
-        if score >= 40:
+        if score >= (best_score * 0.8):
 
             matched_roles.append(role)
 
     return {
 
-            "best_role": best_role,
+        "best_role": best_role,
 
-            "score": best_score,
+        "score": best_score,
 
-            "skills": found_skills,
+        "skills": found_skills,
 
-            "matched_roles": matched_roles,
+        "matched_roles": matched_roles,
 
-            "all_scores": role_scores
-        }       
+        "all_scores": role_scores
+    }
