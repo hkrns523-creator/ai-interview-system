@@ -63,6 +63,16 @@ def extract_resume_data(pdf_path):
 
     text = text.lower()
 
+    found_skills = []
+
+    for description in roles.values():
+
+        for skill in description.lower().split():
+
+            if skill in text and skill not in found_skills:
+
+                found_skills.append(skill)
+
     # Create embedding for resume
     resume_embedding = model.encode(
         text
@@ -108,11 +118,13 @@ def extract_resume_data(pdf_path):
 
     return {
 
-        "best_role": best_role,
+            "best_role": best_role,
 
-        "score": best_score,
+            "score": best_score,
 
-        "matched_roles": matched_roles,
+            "skills": found_skills,
 
-        "all_scores": role_scores
-    }
+            "matched_roles": matched_roles,
+
+            "all_scores": role_scores
+        }       
