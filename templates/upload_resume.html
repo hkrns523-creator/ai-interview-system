@@ -97,22 +97,37 @@
             {% endif %}
             {% if matched_roles %}
 <hr>
+<h3>Recommended Jobs</h3>
+
+<ul>
+{% for job in recommended_jobs %}
+    <li>{{ job }}</li>
+{% endfor %}
+</ul>
 
 <h4>Missing Skills</h4>
 
+{% if missing_skills %}
 <ul>
-    {% for skill in missing_skills %}
-        <li>{{ skill }}</li>
-    {% endfor %}
+{% for skill in missing_skills %}
+    <li>{{ skill }}</li>
+{% endfor %}
 </ul>
+{% else %}
+<p>No major skill gaps detected.</p>
+{% endif %}
 
 <h4>ATS Recommendations</h4>
 
+{% if suggestions %}
 <ul>
-    {% for suggestion in suggestions %}
-        <li>{{ suggestion }}</li>
-    {% endfor %}
+{% for suggestion in suggestions %}
+    <li>{{ suggestion }}</li>
+{% endfor %}
 </ul>
+{% else %}
+<p>Resume is well optimized for the predicted role.</p>
+{% endif %}
 
 <hr class="mt-5">
 

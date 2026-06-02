@@ -119,6 +119,9 @@ def upload_resume(request):
 
             'matched_roles': matched_roles,
 
+            'recommended_jobs':
+                result.get('recommended_jobs',[]),
+
             'recommended_roles': matched_roles,
 
             'missing_skills': missing_skills,

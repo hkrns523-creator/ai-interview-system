@@ -1,7 +1,7 @@
 import pdfplumber
 import re
 from sentence_transformers import SentenceTransformer
-
+from core.chroma_db import collection
 from sklearn.metrics.pairwise import cosine_similarity
 
 
@@ -62,12 +62,12 @@ roles = {
 
     "Java Full Stack Developer":
     """
-    Java Full Stack Developer skilled in developing web applications
-    using Java, Spring Boot, Hibernate, HTML, CSS,
-    JavaScript, React, MySQL, REST APIs,
-    frontend development, backend development,
-    database management, authentication,
-    and full stack software development.
+    Java Full Stack Developer skilled in Core Java,
+    Spring Boot, Hibernate, JDBC, Servlets,
+    JSP, MySQL, Java backend development,
+    enterprise application development,
+    REST APIs, microservices architecture,
+    and frontend development using HTML, CSS and JavaScript.
     """,
 
     "Data Analyst":
@@ -184,8 +184,19 @@ SKILLS = [
     "cryptography",
 
     # APIs
-    "rest api"
-]
+    "rest api",
+
+    "oop",
+    "data structures",
+    "algorithms",
+    "exception handling",
+    "collections",
+    "authentication",
+    "crud",
+    "file handling",
+    "debugging",
+    "problem solving",
+    ]
 
 ROLE_SKILLS = {
 
@@ -328,6 +339,11 @@ def extract_resume_data(pdf_path):
 
     text = text.lower()
 
+    if not text.strip():
+        raise ValueError(
+            "No readable text found in PDF"
+        )
+
     found_skills = []
 
     for skill in SKILLS:
@@ -336,15 +352,23 @@ def extract_resume_data(pdf_path):
     
         if re.search(pattern, text):
         
-            found_skills.append(skill)
+            if skill not in found_skills:
+
+                found_skills.append(skill)
 
     # Create embedding for resume
     resume_embedding = model.encode(
         text,
         convert_to_numpy=True
     )   
+    results = collection.query(
+        query_embeddings=[
+        resume_embedding.tolist()],
+        n_results=5
+    )
 
     role_scores = {}
+
 
     # Compare with each role
     for role, description in roles.items():
@@ -379,8 +403,6 @@ def extract_resume_data(pdf_path):
             max(len(required_skills), 1)
         ) * 100
 
-        required_skills = ROLE_SKILLS.get(role, [])
-
         project_keywords = [
             "project",
             "projects",
@@ -390,17 +412,22 @@ def extract_resume_data(pdf_path):
             "created"
         ]
 
-        project_score = 100 if any(
-            word in text
-            for word in project_keywords
-        ) else 0
+        project_matches = sum(
+            1 for word in project_keywords
+            if word in text
+        )
+
+        project_score = min(
+            (project_matches / 3) * 100,
+            100
+        )
 
         completeness_score = 0
 
         if "@" in text:
             completeness_score += 25
 
-        phone_pattern = r"\b\d{10}\b"
+        phone_pattern = r"(\+91[-\s]?)?[6-9]\d{9}"
 
         if re.search(phone_pattern, text):
             completeness_score += 25
@@ -413,11 +440,11 @@ def extract_resume_data(pdf_path):
 
         final_score = (
 
-            keyword_score * 0.40 +
+            keyword_score * 0.45 +
 
             semantic_score * 0.25 +
 
-            project_score * 0.25 +
+            project_score * 0.20 +
             
             completeness_score * 0.10
         )       
@@ -440,44 +467,120 @@ def extract_resume_data(pdf_path):
     role_scores,
     key=lambda r: role_scores[r]["final_score"]
     )
-    
+
     best_score = role_scores[best_role]["final_score"]
 
-    # Show only strong matching roles
+    predicted_role = best_role
+
     matched_roles = []
-
+    
     for role, score_data in role_scores.items():
-
+    
         if score_data["final_score"] >= (best_score * 0.8):
-
+        
             matched_roles.append(role)
+    
+    
+    # ChromaDB recommendations
+    recommended_jobs = []
+    
+    for i, metadata in enumerate(results["metadatas"][0]):
+    
+        title = metadata["title"]
+    
+        distance = results["distances"][0][i]
+    
+        distance = 0
+
+        if "distances" in results:
+
+            distance = results["distances"][0][i]
+
+        if distance > 0.5:
+            continue
+    
+        # Prevent Python ↔ Java mismatch
+        if "Python" in predicted_role and "Java" in title:
+            continue
+    
+        if "Java" in predicted_role and "Python" in title:
+            continue
+
+        if predicted_role == "DevOps Engineer":
+
+            allowed = [
+                "DevOps Engineer"
+            ]
+
+            if title not in allowed:
+
+                continue
+        if predicted_role == "Cybersecurity":
+
+            allowed = [
+                "Cybersecurity"
+            ]
+
+            if title not in allowed:
+                continue
+
+        if predicted_role == "Data Analyst":
+
+            allowed = [
+                "Data Analyst"
+            ]
+
+            if title not in allowed:
+                continue
+
+        if predicted_role == "Data Scientist":
+
+            allowed = [
+                "Data Scientist"
+            ]
+
+            if title not in allowed:
+                continue
+    
+        recommended_jobs.append(title)
+    
+    
+    # Ensure predicted role is included
+    if predicted_role not in recommended_jobs:
+    
+        recommended_jobs.insert(
+            0,
+            predicted_role
+        )
 
     return {
 
-    "best_role": best_role,
+        "best_role": best_role,
 
-    "score": best_score,
+        "score": best_score,
 
-    "skills": found_skills,
+        "skills": found_skills,
 
-    "matched_roles": matched_roles,
+        "matched_roles": matched_roles,
 
-    "all_scores": role_scores,
+        "recommended_jobs": recommended_jobs,
 
-    "text": text,
+        "all_scores": role_scores,
 
-    "skills_score":
-        role_scores[best_role]["skills_score"],
+        "text": text,
 
-    "semantic_score":
-        role_scores[best_role]["semantic_score"],
+        "skills_score":
+            role_scores[best_role]["skills_score"],
 
-    "project_score":
-        role_scores[best_role]["project_score"],
+        "semantic_score":
+            role_scores[best_role]["semantic_score"],
 
-    "completeness_score":
-        role_scores[best_role]["completeness_score"]
-}
+        "project_score":
+            role_scores[best_role]["project_score"],
+
+        "completeness_score":
+            role_scores[best_role]["completeness_score"]
+    }
 
 
     
@@ -505,10 +608,10 @@ def generate_suggestions(score, skills, text):
             "Add more role-specific keywords."
         )
 
-    if len(skills) < 8:
+    if score < 75:
         suggestions.append(
             "Include additional technical skills."
-        )
+    )
 
     if "github" not in text:
         suggestions.append(
