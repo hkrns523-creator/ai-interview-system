@@ -44,6 +44,7 @@ def extract_skills(resume_text):
         "Ethical Hacking Network Security Penetration Testing Kali Linux Wireshark Cryptography"
     }
 
+
     # Resume embedding
     resume_embedding = model.encode(
         resume_text,
@@ -76,3 +77,6 @@ def extract_skills(resume_text):
     )
 
     return sorted_roles
+
+
+

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from .models import Resume, InterviewResult
-from .resume_parser import extract_resume_data
+from .resume_parser import extract_resume_data,get_skill_gap,generate_suggestions
 from .ai.scoring import evaluate_answer
 from django.contrib.auth.decorators import login_required
 from .ai_generator import generate_questions
@@ -90,6 +90,17 @@ def upload_resume(request):
 
         matched_roles = result['matched_roles']
 
+        missing_skills = get_skill_gap(
+            predicted_role,
+            skills
+        )
+
+        suggestions = generate_suggestions(
+            score,
+            skills,
+            result['text']
+        )
+
         resume.score = score
 
         resume.skills = ",".join(skills)
@@ -108,8 +119,20 @@ def upload_resume(request):
 
             'matched_roles': matched_roles,
 
-            'recommended_roles': matched_roles
-        }
+            'recommended_roles': matched_roles,
+
+            'missing_skills': missing_skills,
+
+            'suggestions': suggestions,
+
+            'skills_score': result.get('skills_score'),
+
+            'semantic_score': result.get('semantic_score'),
+
+            'project_score': result.get('project_score'),
+
+            'completeness_score': result.get('completeness_score'), 
+        }   
 
     return render(request,'upload_resume.html',context)
 

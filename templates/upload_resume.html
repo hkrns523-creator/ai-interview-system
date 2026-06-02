@@ -45,15 +45,23 @@
 
 </div>
 
-<h4>
-    ATS Score:
-    {{ score }}%
-</h4>
+<h3>ATS Score: {{ score }}%</h3>
 
-<h4>
-    Predicted Role:
-    {{ predicted_role }}
-</h4>
+<div class="card p-3 mb-3">
+
+    <h4>ATS Score Breakdown</h4>
+
+    <p>Skills Match: {{ skills_score|floatformat:1 }}%</p>
+
+    <p>Role Similarity: {{ semantic_score|floatformat:1 }}%</p>
+
+    <p>Projects Section: {{ project_score|floatformat:1 }}%</p>
+
+    <p>Resume Completeness: {{ completeness_score|floatformat:1 }}%</p>
+
+</div>
+
+<h3>Predicted Role: {{ predicted_role }}</h3>
 
             <h5 class="mt-4">
                 Skills Found:
@@ -75,6 +83,7 @@
                 Matching Roles:
             </h5>
 
+
             <ul>
 
                 {% for role in matched_roles %}
@@ -87,6 +96,23 @@
 
             {% endif %}
             {% if matched_roles %}
+<hr>
+
+<h4>Missing Skills</h4>
+
+<ul>
+    {% for skill in missing_skills %}
+        <li>{{ skill }}</li>
+    {% endfor %}
+</ul>
+
+<h4>ATS Recommendations</h4>
+
+<ul>
+    {% for suggestion in suggestions %}
+        <li>{{ suggestion }}</li>
+    {% endfor %}
+</ul>
 
 <hr class="mt-5">
 

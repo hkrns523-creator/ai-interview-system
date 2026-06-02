@@ -15,36 +15,301 @@ model = SentenceTransformer(
 roles = {
 
     "Python Developer":
-    "Python Django Flask REST API SQL OOP Data Structures Algorithms Git Backend Development",
+    """
+    Python Developer with strong knowledge of Python programming,
+    Object Oriented Programming (OOP), functions, modules,
+    data structures, algorithms, debugging, problem solving,
+    exception handling, file handling, SQL databases,
+    version control using Git, and software development fundamentals.
+    """,
 
     "Java Developer":
-    "Java Spring Boot Hibernate JDBC JSP Servlets MySQL OOP Backend Development",
+    """
+    Java Developer with strong understanding of Core Java,
+    Object Oriented Programming (OOP), collections framework,
+    exception handling, data structures, algorithms,
+    multithreading, debugging, problem solving,
+    JDBC connectivity, and software development principles.
+    """,
 
     "Frontend Developer":
-    "HTML CSS JavaScript React Bootstrap Tailwind CSS Responsive Web Design UI Development",
+    """
+    Frontend Developer skilled in building responsive and interactive
+    user interfaces using HTML, CSS, JavaScript, React,
+    Bootstrap, Tailwind CSS, responsive web design,
+    UI development, DOM manipulation, and cross-browser compatibility.
+    """,
 
     "Python Full Stack Developer":
-    "Python Django HTML CSS JavaScript React SQL REST API Full Stack Development",
+    """
+    Python Full Stack Developer experienced in developing complete
+    web applications using Python, Django, HTML, CSS,
+    JavaScript, SQL databases, REST APIs, frontend development,
+    backend development, authentication, CRUD operations,
+    database management, Git version control,
+    and full stack web development.
+    """,
 
     "MERN Stack Developer":
-    "MongoDB ExpressJS React NodeJS JavaScript REST API Full Stack Development",
+    """
+    MERN Stack Developer experienced in building full stack
+    web applications using MongoDB, Express.js, React,
+    Node.js, JavaScript, REST APIs, authentication,
+    frontend development, backend development,
+    database management, API integration,
+    and modern web application development.
+    """,
 
     "Java Full Stack Developer":
-    "Java Spring Boot Hibernate HTML CSS JavaScript React MySQL Full Stack Development",
+    """
+    Java Full Stack Developer skilled in developing web applications
+    using Java, Spring Boot, Hibernate, HTML, CSS,
+    JavaScript, React, MySQL, REST APIs,
+    frontend development, backend development,
+    database management, authentication,
+    and full stack software development.
+    """,
+
+    "Data Analyst":
+    """
+    Data Analyst experienced in data cleaning,
+    data visualization, business intelligence,
+    reporting, dashboard development,
+    SQL querying, Excel, Power BI, Tableau,
+    data interpretation, analytics,
+    and generating actionable business insights.
+    """,
 
     "Data Scientist":
-    "Python Pandas NumPy Matplotlib Seaborn Statistics Data Analysis Machine Learning Data Visualization",
+    """
+    Data Scientist skilled in Python,
+    Pandas, NumPy, statistics,
+    machine learning, data preprocessing,
+    exploratory data analysis,
+    data visualization, predictive modeling,
+    feature engineering, and analytical problem solving.
+    """,
 
     "AI/ML Engineer":
-    "Python Machine Learning Deep Learning NLP TensorFlow PyTorch Transformers OpenCV Artificial Intelligence",
+    """
+    AI and Machine Learning Engineer experienced in
+    Python, Machine Learning, Deep Learning,
+    Natural Language Processing (NLP),
+    TensorFlow, PyTorch, Transformers,
+    OpenCV, model training, model evaluation,
+    feature engineering, and artificial intelligence applications.
+    """,
 
     "DevOps Engineer":
-    "Docker Kubernetes Jenkins AWS Linux CI CD Terraform Cloud Infrastructure",
+    """
+    DevOps Engineer skilled in Docker,
+    Kubernetes, Jenkins, AWS,
+    Linux administration, CI/CD pipelines,
+    cloud infrastructure, Terraform,
+    automation, deployment management,
+    monitoring, and infrastructure as code.
+    """,
 
     "Cybersecurity Analyst":
-    "Ethical Hacking Penetration Testing Network Security Kali Linux Wireshark Cryptography Information Security"
+    """
+    Cybersecurity Analyst experienced in
+    ethical hacking, penetration testing,
+    network security, vulnerability assessment,
+    Kali Linux, Wireshark, cryptography,
+    threat analysis, information security,
+    security monitoring, and risk management.
+    """
+}
+SKILLS = [
+
+    # Languages
+    "python",
+    "java",
+    "javascript",
+    "jdbc",
+    "jsp",
+    "servlets",
+
+    # Backend
+    "django",
+    "flask",
+    "spring boot",
+    "hibernate",
+    "nodejs",
+    "expressjs",
+
+    # Frontend
+    "html",
+    "css",
+    "react",
+    "bootstrap",
+    "tailwind css",
+
+    # Databases
+    "sql",
+    "mysql",
+    "mongodb",
+
+    # Tools
+    "git",
+    "docker",
+    "kubernetes",
+    "jenkins",
+
+    # Cloud
+    "aws",
+    "terraform",
+
+    # AI / ML
+    "machine learning",
+    "deep learning",
+    "tensorflow",
+    "pytorch",
+    "nlp",
+    "opencv",
+    "transformers",
+    "pandas",
+    "numpy",
+
+    # Analytics
+    "power bi",
+    "tableau",
+    "excel",
+
+    # Security
+    "ethical hacking",
+    "penetration testing",
+    "network security",
+    "wireshark",
+    "cryptography",
+
+    # APIs
+    "rest api"
+]
+
+ROLE_SKILLS = {
+
+    "Python Developer": [
+        "python",
+        "oop",
+        "data structures",
+        "algorithms",
+        "git",
+        "sql"
+    ],  
+
+    "Frontend Developer": [
+        "html",
+        "css",
+        "javascript",
+        "react",
+        "bootstrap",
+        "tailwind css"
+    ],
+
+    "Python Full Stack Developer": [
+        "python",
+        "django",
+        "html",
+        "css",
+        "javascript",
+        "sql",
+        "rest api",
+        "git"
+    ],
+
+    "MERN Stack Developer": [
+        "mongodb",
+        "expressjs",
+        "react",
+        "nodejs",
+        "javascript",
+        "rest api"
+    ],
+
+    "Java Developer": [
+        "java",
+        "oop",
+        "data structures",
+        "algorithms",
+        "exception handling",
+        "collections"
+    ],
+
+    "Java Full Stack Developer": [
+        "java",
+        "spring boot",
+        "hibernate",
+        "html",
+        "css",
+        "javascript",
+        "react",
+        "mysql"
+    ],
+
+    "AI/ML Engineer": [
+        "python",
+        "machine learning",
+        "deep learning",
+        "tensorflow",
+        "pytorch",
+        "nlp",
+        "opencv"
+    ],
+
+    "Data Analyst": [
+        "excel",
+        "power bi",
+        "sql",
+        "tableau",
+        "python"
+    ],
+
+    "Data Scientist": [
+        "python",
+        "pandas",
+        "numpy",
+        "machine learning",
+        "sql"
+    ],
+
+    "DevOps Engineer": [
+        "docker",
+        "kubernetes",
+        "jenkins",
+        "aws",
+        "terraform"
+    ],
+
+    "Cybersecurity Analyst": [
+        "ethical hacking",
+        "penetration testing",
+        "network security",
+        "wireshark",
+        "cryptography"
+    ]
 }
 
+SKILL_GROUPS = {
+
+    "backend_framework": [
+        "django",
+        "flask"
+    ],
+
+    "database": [
+        "sql",
+        "mysql",
+        "postgresql",
+        "sqlite"
+    ],
+
+    "frontend_framework": [
+        "react",
+        "angular",
+        "vue"
+    ]
+}
 
 def extract_resume_data(pdf_path):
 
@@ -65,87 +330,231 @@ def extract_resume_data(pdf_path):
 
     found_skills = []
 
-    # Extract skills using regex word boundaries
-    for description in roles.values():
-
-        for skill in description.lower().split():
-
-            pattern = rf"\b{re.escape(skill)}\b"
-
-            if re.search(pattern, text):
-
-                if skill not in found_skills:
-
-                    found_skills.append(skill)
+    for skill in SKILLS:
+    
+        pattern = rf"\b{re.escape(skill)}\b"
+    
+        if re.search(pattern, text):
+        
+            found_skills.append(skill)
 
     # Create embedding for resume
-    resume_embedding = model.encode(text)
+    resume_embedding = model.encode(
+        text,
+        convert_to_numpy=True
+    )   
 
     role_scores = {}
 
     # Compare with each role
     for role, description in roles.items():
 
-        role_embedding = model.encode(description)
+        role_embedding = model.encode(
+        description,
+        convert_to_numpy=True
+        )
 
         similarity = cosine_similarity(
             [resume_embedding],
             [role_embedding]
         )[0][0]
 
-        semantic_score = similarity * 100
+        semantic_score = ((similarity + 1) / 2) * 100
 
-        matched_skills = []
+        required_skills = ROLE_SKILLS.get(
+            role,
+            []
+        )
 
-        for skill in found_skills:
+        matched_count = 0
 
-            pattern = rf"\b{re.escape(skill)}\b"
+        for skill in required_skills:
+        
+            if skill_exists(skill,found_skills):
 
-            if re.search(pattern, description.lower()):
-
-                matched_skills.append(skill)
+                matched_count += 1
 
         keyword_score = (
-            len(matched_skills)
-            / len(description.split())
+            matched_count /
+            max(len(required_skills), 1)
         ) * 100
 
-        final_score = (
-            semantic_score * 0.4 +
-            keyword_score * 0.6
-        )
+        required_skills = ROLE_SKILLS.get(role, [])
 
-        role_scores[role] = round(
-            final_score,
-            2
-        )
+        project_keywords = [
+            "project",
+            "projects",
+            "developed",
+            "built",
+            "implemented",
+            "created"
+        ]
+
+        project_score = 100 if any(
+            word in text
+            for word in project_keywords
+        ) else 0
+
+        completeness_score = 0
+
+        if "@" in text:
+            completeness_score += 25
+
+        phone_pattern = r"\b\d{10}\b"
+
+        if re.search(phone_pattern, text):
+            completeness_score += 25
+
+        if "github" in text:
+            completeness_score += 25
+
+        if "linkedin" in text:
+            completeness_score += 25
+
+        final_score = (
+
+            keyword_score * 0.40 +
+
+            semantic_score * 0.25 +
+
+            project_score * 0.25 +
+            
+            completeness_score * 0.10
+        )       
+
+        role_scores[role] = {
+
+            "final_score": round(final_score, 2),
+
+            "skills_score": round(keyword_score, 2),
+
+            "semantic_score": round(semantic_score, 2),
+
+            "project_score": round(project_score, 2),
+
+            "completeness_score": round(completeness_score, 2)
+        }       
 
     # Best matching role
     best_role = max(
-        role_scores,
-        key=role_scores.get
+    role_scores,
+    key=lambda r: role_scores[r]["final_score"]
     )
-
-    best_score = role_scores[best_role]
+    
+    best_score = role_scores[best_role]["final_score"]
 
     # Show only strong matching roles
     matched_roles = []
 
-    for role, score in role_scores.items():
+    for role, score_data in role_scores.items():
 
-        if score >= (best_score * 0.8):
+        if score_data["final_score"] >= (best_score * 0.8):
 
             matched_roles.append(role)
 
     return {
 
-        "best_role": best_role,
+    "best_role": best_role,
 
-        "score": best_score,
+    "score": best_score,
 
-        "skills": found_skills,
+    "skills": found_skills,
 
-        "matched_roles": matched_roles,
+    "matched_roles": matched_roles,
 
-        "all_scores": role_scores
-    }
+    "all_scores": role_scores,
+
+    "text": text,
+
+    "skills_score":
+        role_scores[best_role]["skills_score"],
+
+    "semantic_score":
+        role_scores[best_role]["semantic_score"],
+
+    "project_score":
+        role_scores[best_role]["project_score"],
+
+    "completeness_score":
+        role_scores[best_role]["completeness_score"]
+}
+
+
+    
+def get_skill_gap(role, found_skills):
+
+    required_skills = ROLE_SKILLS.get(role, [])
+
+    missing_skills = []
+
+    for skill in required_skills:
+
+        if not skill_exists(skill,found_skills):
+
+            missing_skills.append(skill)
+
+    return missing_skills
+
+
+def generate_suggestions(score, skills, text):
+
+    suggestions = []
+
+    if score < 70:
+        suggestions.append(
+            "Add more role-specific keywords."
+        )
+
+    if len(skills) < 8:
+        suggestions.append(
+            "Include additional technical skills."
+        )
+
+    if "github" not in text:
+        suggestions.append(
+            "Add a GitHub profile link."
+        )
+
+    if "linkedin" not in text:
+        suggestions.append(
+            "Add a LinkedIn profile link."
+        )
+
+    if "project" not in text:
+        suggestions.append(
+            "Include a dedicated projects section."
+        )
+
+    return suggestions
+
+def skill_exists(skill, found_skills):
+
+    # Direct match
+    if skill in found_skills:
+        return True
+
+    # Backend Framework
+    if skill in SKILL_GROUPS["backend_framework"]:
+
+        return any(
+            s in found_skills
+            for s in SKILL_GROUPS["backend_framework"]
+        )
+
+    # Database
+    if skill in SKILL_GROUPS["database"]:
+
+        return any(
+            s in found_skills
+            for s in SKILL_GROUPS["database"]
+        )
+
+    # Frontend Framework
+    if skill in SKILL_GROUPS["frontend_framework"]:
+
+        return any(
+            s in found_skills
+            for s in SKILL_GROUPS["frontend_framework"]
+        )
+
+    return False
