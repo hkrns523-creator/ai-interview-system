@@ -73,14 +73,16 @@
         </a>
         
 
-        <div>
-            <a href="/dashboard/" class="btn btn-primary px-4 py-2">
-            Dashboard
-            </a>
+        <div class="d-flex align-items-center ms-auto gap-3">
 
+            <a href="/dashboard/"
+               class="btn btn-primary">
+               Dashboard
+            </a>
+        
             <a href="/logout/"
-            class="btn btn-danger">
-                Logout
+               class="btn btn-danger">
+               Logout
             </a>
 
         </div>
@@ -88,6 +90,7 @@
     </div>
 
 </nav>
+
 <div class="container mt-3">
 
     {% if messages %}

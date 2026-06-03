@@ -1,7 +1,6 @@
 import pdfplumber
 import re
 from sentence_transformers import SentenceTransformer
-from core.chroma_db import collection
 from sklearn.metrics.pairwise import cosine_similarity
 
 
@@ -360,11 +359,6 @@ def extract_resume_data(pdf_path):
     resume_embedding = model.encode(
         text,
         convert_to_numpy=True
-    )   
-    results = collection.query(
-        query_embeddings=[
-        resume_embedding.tolist()],
-        n_results=5
     )
 
     role_scores = {}
@@ -479,77 +473,6 @@ def extract_resume_data(pdf_path):
         if score_data["final_score"] >= (best_score * 0.8):
         
             matched_roles.append(role)
-    
-    
-    # ChromaDB recommendations
-    recommended_jobs = []
-    
-    for i, metadata in enumerate(results["metadatas"][0]):
-    
-        title = metadata["title"]
-    
-        distance = 0
-
-        if "distances" in results:
-
-            distance = results["distances"][0][i]
-
-        if distance > 0.5:
-            continue
-    
-        # Prevent Python ↔ Java mismatch
-        if "Python" in predicted_role and "Java" in title:
-            continue
-    
-        if "Java" in predicted_role and "Python" in title:
-            continue
-
-        if predicted_role == "DevOps Engineer":
-
-            allowed = [
-                "DevOps Engineer"
-            ]
-
-            if title not in allowed:
-
-                continue
-        if predicted_role == "Cybersecurity":
-
-            allowed = [
-                "Cybersecurity"
-            ]
-
-            if title not in allowed:
-                continue
-
-        if predicted_role == "Data Analyst":
-
-            allowed = [
-                "Data Analyst"
-            ]
-
-            if title not in allowed:
-                continue
-
-        if predicted_role == "Data Scientist":
-
-            allowed = [
-                "Data Scientist"
-            ]
-
-            if title not in allowed:
-                continue
-    
-        recommended_jobs.append(title)
-    
-    
-    # Ensure predicted role is included
-    if predicted_role not in recommended_jobs:
-    
-        recommended_jobs.insert(
-            0,
-            predicted_role
-        )
 
     return {
 
@@ -560,8 +483,6 @@ def extract_resume_data(pdf_path):
         "skills": found_skills,
 
         "matched_roles": matched_roles,
-
-        "recommended_jobs": recommended_jobs,
 
         "all_scores": role_scores,
 

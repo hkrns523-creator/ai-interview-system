@@ -45,7 +45,9 @@
 
 </div>
 
-<h3>ATS Score: {{ score }}%</h3>
+<h3 class="text-primary">
+    ATS Score: {{ score|floatformat:1 }}%
+</h3>
 
 <div class="card p-3 mb-3">
 
@@ -60,8 +62,6 @@
     <p>Resume Completeness: {{ completeness_score|floatformat:1 }}%</p>
 
 </div>
-
-<h3>Predicted Role: {{ predicted_role }}</h3>
 
             <h5 class="mt-4">
                 Skills Found:
@@ -97,13 +97,6 @@
             {% endif %}
             {% if matched_roles %}
 <hr>
-<h3>Recommended Jobs</h3>
-
-<ul>
-{% for job in recommended_jobs %}
-    <li>{{ job }}</li>
-{% endfor %}
-</ul>
 
 <h4>Missing Skills</h4>
 

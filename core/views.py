@@ -105,6 +105,8 @@ def upload_resume(request):
 
         resume.skills = ",".join(skills)
 
+        resume.role = predicted_role
+
         resume.save()
 
         messages.success(request,"Resume analyzed successfully")
@@ -118,9 +120,6 @@ def upload_resume(request):
             'predicted_role': predicted_role,
 
             'matched_roles': matched_roles,
-
-            'recommended_jobs':
-                result.get('recommended_jobs',[]),
 
             'recommended_roles': matched_roles,
 

@@ -6,6 +6,7 @@ class Resume(models.Model):
     file = models.FileField(upload_to='resumes/')
     score = models.IntegerField(default=0)
     skills = models.TextField()
+    role = models.CharField(max_length=100, blank=True)
 
 class InterviewResult(models.Model):
 
