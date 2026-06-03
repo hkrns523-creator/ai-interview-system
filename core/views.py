@@ -8,7 +8,6 @@ from django.contrib.auth.decorators import login_required
 from .ai_generator import generate_questions
 import json
 from django.http import JsonResponse
-from .skill_extractor import extract_skills
 from .models import Role
 from django.contrib import messages
 
