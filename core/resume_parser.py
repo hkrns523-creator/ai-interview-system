@@ -488,8 +488,6 @@ def extract_resume_data(pdf_path):
     
         title = metadata["title"]
     
-        distance = results["distances"][0][i]
-    
         distance = 0
 
         if "distances" in results:
