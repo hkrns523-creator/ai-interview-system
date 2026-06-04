@@ -125,9 +125,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 LOGIN_URL = '/login/'
-CSRF_TRUSTED_ORIGINS = [
-    "https://reformist-symptom-unusual.ngrok-free.dev"
-]
-CSRF_COOKIE_SECURE = False
-SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
