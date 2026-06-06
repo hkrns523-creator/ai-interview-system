@@ -377,7 +377,7 @@ def extract_resume_data(pdf_path):
             [role_embedding]
         )[0][0]
 
-        semantic_score = ((similarity + 1) / 2) * 100
+        semantic_score = similarity * 100
 
         required_skills = ROLE_SKILLS.get(
             role,
