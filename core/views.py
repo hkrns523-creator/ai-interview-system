@@ -1,7 +1,11 @@
 from django.shortcuts import render, redirect
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .serializers import (ResumeSerializer, InterviewResultSerializer,
+                           QuestionSerializer, RoleSerializer)
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
-from .models import Resume, InterviewResult
+from .models import Resume, InterviewResult, Question, Role, Skill
 from .resume_parser import extract_resume_data,get_skill_gap,generate_suggestions
 from .ai.scoring import evaluate_answer
 from django.contrib.auth.decorators import login_required
@@ -382,3 +386,90 @@ def result_page(request):
     }
 
     return render(request, 'result.html', context)
+
+# ── Resume API ──────────────────────────────────────────
+
+@api_view(['GET'])
+def api_resume_list(request):
+    resumes = Resume.objects.select_related('user').all()
+    serializer = ResumeSerializer(resumes, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def api_resume_detail(request, pk):
+    try:
+        resume = Resume.objects.select_related('user').get(pk=pk)
+    except Resume.DoesNotExist:
+        return Response({'error': 'Resume not found'}, status=404)
+    serializer = ResumeSerializer(resume)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def api_resume_score(request, pk):
+    try:
+        resume = Resume.objects.select_related('user').get(pk=pk)
+    except Resume.DoesNotExist:
+        return Response({'error': 'Resume not found'}, status=404)
+    return Response({
+        'candidate': resume.user.username,
+        'role': resume.role,
+        'ats_score': resume.score,
+        'result': 'pass' if resume.score >= 70 else 'fail',
+        'skills': resume.skills
+    })
+
+
+#  ─ Interview API ─
+
+@api_view(['GET'])
+def api_interview_list(request):
+    results = InterviewResult.objects.select_related('user').all()
+    serializer = InterviewResultSerializer(results, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def api_interview_by_role(request, role):
+    results = InterviewResult.objects.select_related('user').filter(
+        role__icontains=role
+    )
+    if not results.exists():
+        return Response({'error': f'No results for role: {role}'}, status=404)
+    serializer = InterviewResultSerializer(results, many=True)
+    return Response({
+        'role': role,
+        'count': results.count(),
+        'average_score': round(
+            sum(r.score for r in results) / results.count(), 2
+        ),
+        'results': serializer.data
+    })
+
+
+# ─ Question API ─
+
+@api_view(['GET'])
+def api_question_list(request):
+    questions = Question.objects.all()
+    role = request.query_params.get('role')
+    difficulty = request.query_params.get('difficulty')
+    if role:
+        questions = questions.filter(role__icontains=role)
+    if difficulty:
+        questions = questions.filter(difficulty__icontains=difficulty)
+    serializer = QuestionSerializer(questions, many=True)
+    return Response({
+        'count': questions.count(),
+        'questions': serializer.data
+    })
+
+
+# ─ Role API ─
+
+@api_view(['GET'])
+def api_role_list(request):
+    roles = Role.objects.prefetch_related('skills').all()
+    serializer = RoleSerializer(roles, many=True)
+    return Response(serializer.data)

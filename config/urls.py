@@ -31,6 +31,13 @@ urlpatterns = [
     path('interview/', views.interview, name='interview'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('result/', views.result_page, name='result_page'),
+    path('api/resumes/',views.api_resume_list,name='api-resume-list'),
+    path('api/resumes/<int:pk>/', views.api_resume_detail,name='api-resume-detail'),
+    path('api/resumes/<int:pk>/score/', views.api_resume_score, name='api-resume-score'),
+    path('api/interviews/',views.api_interview_list,name='api-interview-list'),
+    path('api/interviews/role/<str:role>/',views.api_interview_by_role,name='api-interview-by-role'),
+    path('api/questions/',views.api_question_list,name='api-question-list'),
+    path('api/roles/',views.api_role_list,name='api-role-list'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL,
