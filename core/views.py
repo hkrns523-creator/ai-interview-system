@@ -14,6 +14,7 @@ import json
 from django.http import JsonResponse
 from .models import Role
 from django.contrib import messages
+from django.views.decorators.cache import never_cache
 
 
 @login_required
@@ -141,6 +142,7 @@ def upload_resume(request):
 
     return render(request,'upload_resume.html',context)
 
+@never_cache
 @login_required
 def interview(request):
 
@@ -185,7 +187,6 @@ def interview(request):
             for skill in selected_role.skills.all()
         ]
 
-        # AI-generated questions
         generated_questions = generate_questions(
             role,
             role_skills,
@@ -230,12 +231,10 @@ def interview(request):
 
         current_question = questions[q_index]
 
-        # Correct answer + keywords
         correct_answer = current_question['answer']
 
         keywords = current_question['keywords']
 
-        # Advanced AI evaluation
         result = evaluate_answer(
             answer,
             correct_answer,
@@ -245,8 +244,6 @@ def interview(request):
         score = result['final_score']
 
         feedback = result['feedback']
-
-        # Store interview results temporarily
 
         interview_results = request.session.get(
             'interview_results',
@@ -294,8 +291,6 @@ def interview(request):
                 feedback=f"Interview completed with score {final_score}/10"
 
             )
-
-            # STORE RESULT DATA IN SESSION
 
             request.session['final_score'] = final_score
 
@@ -369,25 +364,30 @@ def dashboard(request):
         'highest_score': highest_score
 
     })
+
+@never_cache
+@login_required
 def result_page(request):
+    print("User authenticated:", request.user.is_authenticated)
+    print("User:", request.user)
+    print("Session keys:", list(request.session.keys()))
+
+    final_score = request.session.get('final_score')
+
+    if final_score is None:
+        return redirect('interview')
 
     context = {
-
-        'final_score': request.session.get('final_score', 0),
-
+        'final_score': final_score,
         'feedback': request.session.get('feedback', ''),
-
         'semantic': request.session.get('semantic', 0),
-
         'keyword': request.session.get('keyword', 0),
-
         'grammar': request.session.get('grammar', 0)
-
     }
 
     return render(request, 'result.html', context)
 
-# ── Resume API ──────────────────────────────────────────
+# ─ Resume API ─
 
 @api_view(['GET'])
 def api_resume_list(request):
