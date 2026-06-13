@@ -258,8 +258,13 @@ def interview(request):
 
             'score': score,
 
-            'feedback': feedback
+            'feedback': feedback,
 
+            'semantic': result['semantic'],
+
+            'keyword': result['keyword'],
+
+            'grammar': result['grammar'],
         })
 
         request.session['interview_results'] = interview_results
@@ -280,30 +285,48 @@ def interview(request):
                 2
             )
 
+            num_results = len(interview_results)
+
+            avg_semantic = round(
+                sum(r['semantic'] for r in interview_results) / num_results, 2
+            )
+
+            avg_keyword = round(
+                sum(r['keyword'] for r in interview_results) / num_results, 2
+            )
+
+            avg_grammar = round(
+                sum(r['grammar'] for r in interview_results) / num_results, 2
+            )
+
+            combined_feedback = []
+
+            for r in interview_results:
+
+                combined_feedback.extend(r.get('feedback', []))
+
             InterviewResult.objects.create(
-            
+
                 user=request.user,
-
                 role=role,
-
                 score=final_score,
-
-                feedback=f"Interview completed with score {final_score}/10"
+                feedback=f"Interview completed with score {final_score}/10. " + " ".join(combined_feedback)
 
             )
 
             request.session['final_score'] = final_score
 
-            request.session['feedback'] = feedback
+            #request.session['feedback'] = combined_feedback
 
-            request.session['semantic'] = result['semantic']
+            request.session['semantic'] = avg_semantic
 
-            request.session['keyword'] = result['keyword']
+            request.session['keyword'] = avg_keyword
 
-            request.session['grammar'] = result['grammar']
+            request.session['grammar'] = avg_grammar
+
+            request.session['breakdown'] = interview_results
 
             # REMOVE INTERVIEW SESSION DATA
-
             request.session.pop('questions', None)
 
             request.session.pop('q_index', None)
@@ -311,13 +334,12 @@ def interview(request):
             request.session.pop('total_score', None)
 
             request.session.pop('role', None)
-
+            
             request.session.pop('interview_results', None)
 
             messages.success(request, "Interview completed successfully")
 
             return redirect('result_page')
-
 
     if role and q_index < len(questions):
 
@@ -368,6 +390,7 @@ def dashboard(request):
 @never_cache
 @login_required
 def result_page(request):
+
     print("User authenticated:", request.user.is_authenticated)
     print("User:", request.user)
     print("Session keys:", list(request.session.keys()))
@@ -378,11 +401,17 @@ def result_page(request):
         return redirect('interview')
 
     context = {
+
         'final_score': final_score,
-        'feedback': request.session.get('feedback', ''),
+
         'semantic': request.session.get('semantic', 0),
+
         'keyword': request.session.get('keyword', 0),
-        'grammar': request.session.get('grammar', 0)
+
+        'grammar': request.session.get('grammar', 0),
+
+        'breakdown': request.session.get('breakdown', []),
+
     }
 
     return render(request, 'result.html', context)
@@ -391,6 +420,7 @@ def result_page(request):
 
 @api_view(['GET'])
 def api_resume_list(request):
+
     resumes = Resume.objects.select_related('user').all()
     serializer = ResumeSerializer(resumes, many=True)
     return Response(serializer.data)
@@ -398,8 +428,10 @@ def api_resume_list(request):
 
 @api_view(['GET'])
 def api_resume_detail(request, pk):
+
     try:
         resume = Resume.objects.select_related('user').get(pk=pk)
+
     except Resume.DoesNotExist:
         return Response({'error': 'Resume not found'}, status=404)
     serializer = ResumeSerializer(resume)
@@ -408,10 +440,13 @@ def api_resume_detail(request, pk):
 
 @api_view(['GET'])
 def api_resume_score(request, pk):
+
     try:
         resume = Resume.objects.select_related('user').get(pk=pk)
+
     except Resume.DoesNotExist:
         return Response({'error': 'Resume not found'}, status=404)
+
     return Response({
         'candidate': resume.user.username,
         'role': resume.role,
@@ -425,26 +460,34 @@ def api_resume_score(request, pk):
 
 @api_view(['GET'])
 def api_interview_list(request):
+
     results = InterviewResult.objects.select_related('user').all()
     serializer = InterviewResultSerializer(results, many=True)
+
     return Response(serializer.data)
 
 
 @api_view(['GET'])
 def api_interview_by_role(request, role):
+
     results = InterviewResult.objects.select_related('user').filter(
         role__icontains=role
     )
+
     if not results.exists():
         return Response({'error': f'No results for role: {role}'}, status=404)
+
     serializer = InterviewResultSerializer(results, many=True)
+
     return Response({
+
         'role': role,
         'count': results.count(),
         'average_score': round(
             sum(r.score for r in results) / results.count(), 2
         ),
         'results': serializer.data
+
     })
 
 
@@ -452,17 +495,24 @@ def api_interview_by_role(request, role):
 
 @api_view(['GET'])
 def api_question_list(request):
+
     questions = Question.objects.all()
     role = request.query_params.get('role')
     difficulty = request.query_params.get('difficulty')
+
     if role:
         questions = questions.filter(role__icontains=role)
+
     if difficulty:
         questions = questions.filter(difficulty__icontains=difficulty)
+
     serializer = QuestionSerializer(questions, many=True)
+
     return Response({
+
         'count': questions.count(),
         'questions': serializer.data
+
     })
 
 
@@ -470,6 +520,8 @@ def api_question_list(request):
 
 @api_view(['GET'])
 def api_role_list(request):
+
     roles = Role.objects.prefetch_related('skills').all()
     serializer = RoleSerializer(roles, many=True)
+
     return Response(serializer.data)

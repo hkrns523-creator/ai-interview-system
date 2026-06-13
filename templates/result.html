@@ -109,25 +109,72 @@
 
     </div>
 
-    <!-- Feedback Section -->
+    <!-- Question-by-Question Breakdown -->
 
     <div class="card shadow p-4 mt-5">
 
-        <h2 class="mb-3">
-            AI Feedback
+        <h2 class="mb-4">
+            Question-by-Question Breakdown
         </h2>
 
-        <ul>
+        {% for item in breakdown %}
 
-            {% for item in feedback %}
+            <div class="card mb-3 p-3 {% if item.score >= 8 %}border-success{% elif item.score >= 5 %}border-warning{% else %}border-danger{% endif %}">
 
-                <li class="mb-2">
-                    {{ item }}
-                </li>
+                <div class="d-flex justify-content-between align-items-start">
 
-            {% endfor %}
+                    <h5 class="mb-2">
+                        Q{{ forloop.counter }}: {{ item.question }}
+                    </h5>
 
-        </ul>
+                    {% if item.score >= 8 %}
+                        <span class="badge bg-success fs-6">{{ item.score }}/10</span>
+                    {% elif item.score >= 5 %}
+                        <span class="badge bg-warning fs-6">{{ item.score }}/10</span>
+                    {% else %}
+                        <span class="badge bg-danger fs-6">{{ item.score }}/10</span>
+                    {% endif %}
+
+                </div>
+
+                <p class="text-muted mb-2">
+                    <strong>Your answer:</strong> {{ item.answer }}
+                </p>
+
+                <div class="row text-center mb-2">
+
+                    <div class="col-4">
+                        <small class="text-secondary">Technical</small>
+                        <div class="fw-bold text-primary">{{ item.semantic }}/10</div>
+                    </div>
+
+                    <div class="col-4">
+                        <small class="text-secondary">Keyword</small>
+                        <div class="fw-bold text-success">{{ item.keyword }}/10</div>
+                    </div>
+
+                    <div class="col-4">
+                        <small class="text-secondary">Grammar</small>
+                        <div class="fw-bold text-warning">{{ item.grammar }}/10</div>
+                    </div>
+
+                </div>
+
+                <ul class="mb-0">
+
+                    {% for fb in item.feedback %}
+                        <li>{{ fb }}</li>
+                    {% endfor %}
+
+                </ul>
+
+            </div>
+
+        {% empty %}
+
+            <p class="text-muted">No question breakdown available.</p>
+
+        {% endfor %}
 
     </div>
 
