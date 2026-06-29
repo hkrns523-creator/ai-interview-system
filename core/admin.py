@@ -1,10 +1,5 @@
 from django.contrib import admin
-from .models import Role, Skill
-from .models import (
-    Resume,
-    InterviewResult,
-    Question
-)
+from .models import Resume, InterviewResult, Question, Role, Skill
 
 admin.site.register(Resume)
 admin.site.register(InterviewResult)

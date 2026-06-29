@@ -10,9 +10,8 @@ for resource in [
 ]:
     try:
         nltk.data.find(resource)
-    except LookupError:
+    except (LookupError, OSError):
         nltk.download(resource.split('/')[-1], quiet=True)
-
 
 def grammar_score(answer):
 

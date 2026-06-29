@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .serializers import (ResumeSerializer, InterviewResultSerializer,
                            QuestionSerializer, RoleSerializer)
@@ -12,7 +13,6 @@ from django.contrib.auth.decorators import login_required
 from .ai_generator import generate_questions
 import json
 from django.http import JsonResponse
-from .models import Role
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
 
@@ -316,8 +316,6 @@ def interview(request):
 
             request.session['final_score'] = final_score
 
-            #request.session['feedback'] = combined_feedback
-
             request.session['semantic'] = avg_semantic
 
             request.session['keyword'] = avg_keyword
@@ -391,10 +389,6 @@ def dashboard(request):
 @login_required
 def result_page(request):
 
-    print("User authenticated:", request.user.is_authenticated)
-    print("User:", request.user)
-    print("Session keys:", list(request.session.keys()))
-
     final_score = request.session.get('final_score')
 
     if final_score is None:
@@ -419,14 +413,20 @@ def result_page(request):
 # ─ Resume API ─
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def api_resume_list(request):
 
-    resumes = Resume.objects.select_related('user').all()
+    if request.user.is_staff:
+        resumes = Resume.objects.select_related('user').all()
+    else:
+        resumes = Resume.objects.select_related('user').filter(user=request.user)
+
     serializer = ResumeSerializer(resumes, many=True)
     return Response(serializer.data)
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def api_resume_detail(request, pk):
 
     try:
@@ -434,11 +434,16 @@ def api_resume_detail(request, pk):
 
     except Resume.DoesNotExist:
         return Response({'error': 'Resume not found'}, status=404)
+
+    if not request.user.is_staff and resume.user_id != request.user.id:
+        return Response({'error': 'Not allowed to view this resume'}, status=403)
+
     serializer = ResumeSerializer(resume)
     return Response(serializer.data)
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def api_resume_score(request, pk):
 
     try:
@@ -446,6 +451,9 @@ def api_resume_score(request, pk):
 
     except Resume.DoesNotExist:
         return Response({'error': 'Resume not found'}, status=404)
+
+    if not request.user.is_staff and resume.user_id != request.user.id:
+        return Response({'error': 'Not allowed to view this resume'}, status=403)
 
     return Response({
         'candidate': resume.user.username,
@@ -459,20 +467,29 @@ def api_resume_score(request, pk):
 #  ─ Interview API ─
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def api_interview_list(request):
 
-    results = InterviewResult.objects.select_related('user').all()
+    if request.user.is_staff:
+        results = InterviewResult.objects.select_related('user').all()
+    else:
+        results = InterviewResult.objects.select_related('user').filter(user=request.user)
+
     serializer = InterviewResultSerializer(results, many=True)
 
     return Response(serializer.data)
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def api_interview_by_role(request, role):
 
     results = InterviewResult.objects.select_related('user').filter(
         role__icontains=role
     )
+
+    if not request.user.is_staff:
+        results = results.filter(user=request.user)
 
     if not results.exists():
         return Response({'error': f'No results for role: {role}'}, status=404)
