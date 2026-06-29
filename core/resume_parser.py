@@ -120,8 +120,6 @@ roles = {
     """
 }                          
 
-model = SentenceTransformer("all-MiniLM-L6-v2")
-
 _role_names = list(roles.keys())
 _role_descriptions = list(roles.values())
 ROLE_EMBEDDINGS = dict(zip(
