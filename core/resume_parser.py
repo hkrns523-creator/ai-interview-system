@@ -118,8 +118,18 @@ roles = {
     threat analysis, information security,
     security monitoring, and risk management.
     """
-}
-SKILLS = [
+}                          
+
+model = SentenceTransformer("all-MiniLM-L6-v2")
+
+_role_names = list(roles.keys())
+_role_descriptions = list(roles.values())
+ROLE_EMBEDDINGS = dict(zip(
+    _role_names,
+    model.encode(_role_descriptions, convert_to_numpy=True)
+))
+
+SKILLS = [                 
 
     # Languages
     "python",
@@ -363,13 +373,7 @@ def extract_resume_data(pdf_path):
 
     role_scores = {}
 
-    role_names = list(roles.keys())
-    role_descriptions = list(roles.values())
-    role_embeddings_batch = model.encode(
-        role_descriptions,
-        convert_to_numpy=True
-    )
-    role_embeddings = dict(zip(role_names, role_embeddings_batch))
+    role_embeddings = ROLE_EMBEDDINGS
 
     for role, description in roles.items():
 
