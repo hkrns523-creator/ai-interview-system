@@ -363,14 +363,17 @@ def extract_resume_data(pdf_path):
 
     role_scores = {}
 
+    role_names = list(roles.keys())
+    role_descriptions = list(roles.values())
+    role_embeddings_batch = model.encode(
+        role_descriptions,
+        convert_to_numpy=True
+    )
+    role_embeddings = dict(zip(role_names, role_embeddings_batch))
 
-    # Compare with each role
     for role, description in roles.items():
 
-        role_embedding = model.encode(
-        description,
-        convert_to_numpy=True
-        )
+        role_embedding = role_embeddings[role]
 
         similarity = cosine_similarity(
             [resume_embedding],
