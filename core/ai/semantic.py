@@ -1,16 +1,19 @@
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 
-# Load model once
-model = SentenceTransformer(
-    'all-MiniLM-L6-v2'
-)
+_model = None
+
+
+def get_model():
+    global _model
+    if _model is None:
+        _model = SentenceTransformer('all-MiniLM-L6-v2')
+    return _model
 
 def semantic_score(user_answer, correct_answer):
 
     answer = user_answer.strip().lower()
 
-    # Basic validations
     if not answer:
         return 0
 
@@ -20,19 +23,18 @@ def semantic_score(user_answer, correct_answer):
     if len(set(answer)) <= 3:
         return 0
 
-    # Generate embeddings
+    model = get_model()
+
     embeddings = model.encode([
         answer,
         correct_answer.lower()
     ])
 
-    # Calculate semantic similarity
     similarity = cosine_similarity(
         [embeddings[0]],
         [embeddings[1]]
     )[0][0]
 
-    # Score mapping
     if similarity < 0.30:
         return 0
 
