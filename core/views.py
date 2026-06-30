@@ -309,6 +309,8 @@ def interview(request):
 
                 user=request.user,
                 role=role,
+                question=f"{len(questions)}-question {role} interview",
+                answer=f"{num_results} answers submitted",
                 score=final_score,
                 feedback=f"Interview completed with score {final_score}/10. " + " ".join(combined_feedback)
 
